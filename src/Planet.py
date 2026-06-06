@@ -1,6 +1,7 @@
 import numpy as np
+#import Simulation as sim
 
-G = 6 # Gravitational Constant
+G = 3 # Gravitational Constant
 dt = 1       # Time Step  
 
 """
@@ -36,17 +37,17 @@ class Planet:
             body.vx += ax * dt  
             body.vy += ay * dt  
 
-            print(f"body.vx: {body.vx}")
-            print(f"body.vy: {body.vy}")
+            # print(f"body.vx: {body.vx}")
+            # print(f"body.vy: {body.vy}")
 
             # Update position components
             body.x_coord += (body.vx * dt)   
             body.y_coord += (body.vy * dt) 
 
-            if body.x_coord >= 1250 or body.x_coord <= 0:
-                body.vx = -body.vx
-            if body.y_coord >= 700 or body.y_coord <= 0:
-                body.vy = -body.vy
+            # if body.x_coord >= sim.WINDOW_WIDTH or body.x_coord <= 0:
+            #     body.vx = -body.vx
+            # if body.y_coord >= sim.WINDOW_HEIGHT or body.y_coord <= 0:
+            #     body.vy = -body.vy
 
     def compute_forces(self, bodies):
         forces = [(0,0) for _ in bodies]
@@ -59,10 +60,10 @@ class Planet:
                     dist = (dx**2 + dy**2)**0.5 + 1e-10  # Compute distance (avoid division by zero)
                 
                     force_mag = G * b1.mass * b2.mass / dist**2  # Newton's law
-                    print(f"force_mag: {force_mag}")
-                    print(f"dist: {dist}")
-                    print(f"dx: {dx}")
-                    print(f"dy: {dy}")
+                    # print(f"force_mag: {force_mag}")
+                    # print(f"dist: {dist}")
+                    # print(f"dx: {dx}")
+                    # print(f"dy: {dy}")
                     # Compute force components in x and y directions
                     fx += force_mag * (dx / dist)  
                     fy += force_mag * (dy / dist)
