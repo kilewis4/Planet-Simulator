@@ -1,8 +1,8 @@
 import numpy as np
 #import Simulation as sim
 
-G = 3 # Gravitational Constant
-dt = 1       # Time Step  
+G = 1.0 # Gravitational Constant (tunable)
+dt = 0.1  # Time step for integration (smaller -> more accurate)
 
 """
 Class to define celestial bodies
@@ -19,30 +19,25 @@ class Planet:
         self.vx = vx  
         self.vy = vy  
         self.size = size
-
     def update(self, bodies):
-        forces = self.compute_forces(bodies)  # Get force tuples (fx, fy)
-        print(f"forces: {forces}")
-    
-        for i, body in enumerate(bodies):
-            fx, fy = forces[i]  # Extract force components
-            #sprint(f"forces[i]: {forces[i]}")
+        # Use velocity-Verlet integration for improved energy behaviour
+        # 1) compute accelerations at current positions
+        forces = self.compute_forces(bodies)
+        accs = [(fx / b.mass, fy / b.mass) for (fx, fy), b in zip(forces, bodies)]
 
+        # 2) update positions using current velocities and accelerations
+        for b, (ax, ay) in zip(bodies, accs):
+            b.x_coord += b.vx * dt + 0.5 * ax * (dt ** 2)
+            b.y_coord += b.vy * dt + 0.5 * ay * (dt ** 2)
 
-            # Compute acceleration in x and y directions
-            ax = fx / body.mass  
-            ay = fy / body.mass  
+        # 3) compute new accelerations at updated positions
+        forces_new = self.compute_forces(bodies)
+        accs_new = [(fx / b.mass, fy / b.mass) for (fx, fy), b in zip(forces_new, bodies)]
 
-            # Update velocity components
-            body.vx += ax * dt  
-            body.vy += ay * dt  
-
-            # print(f"body.vx: {body.vx}")
-            # print(f"body.vy: {body.vy}")
-
-            # Update position components
-            body.x_coord += (body.vx * dt)   
-            body.y_coord += (body.vy * dt) 
+        # 4) update velocities with the average acceleration
+        for b, (ax, ay), (axn, ayn) in zip(bodies, accs, accs_new):
+            b.vx += 0.5 * (ax + axn) * dt
+            b.vy += 0.5 * (ay + ayn) * dt
 
             # if body.x_coord >= sim.WINDOW_WIDTH or body.x_coord <= 0:
             #     body.vx = -body.vx
